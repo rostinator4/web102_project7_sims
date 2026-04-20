@@ -2,42 +2,37 @@ import { useState, useEffect } from 'react'
 import Card from '../components/Card'
 import { supabase } from '../client'
 
-const ReadPosts = (props) => {
-
-    const [posts, setPosts] = useState([])
+const ReadPosts = () => {
+    const [citizens, setCitizens] = useState([])
 
     useEffect(() => {
-
-        const fetchPosts = async () => {
+        const fetchCitizens = async () => {
             const { data } = await supabase
-                .from('Posts')
+                .from('Citizens') // Make sure table name matches Supabase
                 .select()
                 .order('created_at', { ascending: true })
-
-            // set state of posts
-            setPosts(data)
+            setCitizens(data)
         }
-        fetchPosts()
-    }, [props])
+        fetchCitizens()
+    }, [])
 
     return (
         <div className="ReadPosts">
-            {
-                posts && posts.length > 0 ?
-                    [...posts]
-                        .sort((a, b) => a.id - b.id)
-                        .map((post, index) =>
-                            <Card
-                                key={post.id}
-                                id={post.id}
-                                title={post.title}
-                                author={post.author}
-                                description={post.description}
-                            />
-                        ) : <h2>{'No Challenges Yet 😞'}</h2>
-            }
+            {citizens && citizens.length > 0 ? (
+                citizens.map((citizen) => (
+                    <Card
+                        key={citizen.id}
+                        id={citizen.id}
+                        name={citizen.name}
+                        age={citizen.age}
+                        avatar={citizen.avatar}
+                    />
+                ))
+            ) : (
+                <h2>{'Your city is currently a ghost town. Add some citizens! 👻'}</h2>
+            )}
         </div>
     )
 }
 
-export default ReadPosts
+export default ReadPosts;

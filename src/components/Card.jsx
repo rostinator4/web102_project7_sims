@@ -4,22 +4,29 @@ import more from './more.png'
 import { Link } from 'react-router-dom'
 
 
-const Card = (props) =>  {
+const Card = (props) => {
+    const avatarMap = {
+        man: "👨",
+        woman: "👩",
+        boy: "👦",
+        girl: "👧",
+        dog: "🐕",
+        cat: "🐈"
+    };
 
-  const [count, setCount] = useState(0)
-  const updateCount = () => {
-    setCount((count) => count + 1)
-  }
-
-  return (
-      <div className="Card">
-          <Link to={'edit/'+ props.id}><img className="moreButton" alt="edit button" src={more} /></Link>
-          <h2 className="title">{props.title}</h2>
-          <h3 className="author">{"by " + props.author}</h3>
-          <p className="description">{props.description}</p>
-          <button className="betButton" onClick={updateCount} >👍 Bet Count: {count}</button>
-      </div>
-  );
+    return (
+        <div className="Card">
+            <Link to={'/edit/' + props.id}>
+                <img className="moreButton" alt="edit" src={more} />
+            </Link>
+            <div style={{ fontSize: "50px" }}>
+                {avatarMap[props.avatar] || "👤"}
+            </div>
+            <h2 className="title">{props.name}</h2>
+            <p><strong>Age:</strong> {props.age}</p>
+            <p className="description">Type: {props.avatar}</p>
+        </div>
+    );
 };
 
 export default Card

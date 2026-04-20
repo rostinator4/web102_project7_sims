@@ -1,62 +1,66 @@
-import {useState} from 'react'
+import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import './EditPost.css'
 import { supabase } from '../client'
 
-const EditPost = ({data}) => {
+const EditPost = () => {
+    const { id } = useParams()
+    const [citizen, setCitizen] = useState({ name: "", age: "", avatar: "man" })
 
-    const {id} = useParams()
-    const [post, setPost] = useState({id: null, title: "", author: "", description: ""})
+    useEffect(() => {
+        const fetchCitizen = async () => {
+            const { data } = await supabase
+                .from('Citizens')
+                .select()
+                .eq('id', id)
+                .single()
+            setCitizen(data)
+        }
+        fetchCitizen()
+    }, [id])
 
-    const updatePost = async (event) => {
+    const updateCitizen = async (event) => {
         event.preventDefault()
         await supabase
-        .from('Posts')
-        .update({ title: post.title, author: post.author,  description: post.description})
-        .eq('id', id)
-        window.location = "/"
+            .from('Citizens')
+            .update({ name: citizen.name, age: citizen.age, avatar: citizen.avatar })
+            .eq('id', id)
+        window.location = "/citizens"
     }
 
-    const deletePost = async (event) => {
+    const deleteCitizen = async (event) => {
         event.preventDefault()
-        await supabase
-        .from('Posts')
-        .delete()
-        .eq('id', id)
-
-        window.location = "/";
+        await supabase.from('Citizens').delete().eq('id', id)
+        window.location = "/citizens"
     }
 
-    const handleChange = (event) => {
-        const {name, value} = event.target
-        setPost( (prev) => {
-            return {
-                ...prev,
-                [name]:value,
-            }
-        })
+    const handleChange = (e) => {
+        setCitizen(prev => ({ ...prev, [e.target.name]: e.target.value }))
     }
 
     return (
         <div>
-            <form>
-                <label htmlFor="title">Title</label> <br />
-                <input type="text" id="title" name="title" value={post.title} onChange={handleChange} /><br />
-                <br/>
+            <form onSubmit={updateCitizen}>
+                <label>Name</label><br />
+                <input type="text" name="name" value={citizen.name} onChange={handleChange} /><br />
 
-                <label htmlFor="author">Author</label><br />
-                <input type="text" id="author" name="author" value={post.author} onChange={handleChange} /><br />
-                <br/>
+                <label>Age</label><br />
+                <input type="number" name="age" value={citizen.age} onChange={handleChange} /><br />
 
-                <label htmlFor="description">Description</label><br />
-                <textarea rows="5" cols="50" id="description" name="description" value={post.description} onChange={handleChange} >
-                </textarea>
-                <br/>
-                <input type="submit" value="Submit" onClick={updatePost} />
-                <button className="deleteButton" onClick={deletePost}>Delete</button>
+                <label>Avatar</label><br />
+                <select name="avatar" value={citizen.avatar} onChange={handleChange}>
+                    <option value="man">Man</option>
+                    <option value="woman">Woman</option>
+                    <option value="boy">Boy</option>
+                    <option value="girl">Girl</option>
+                    <option value="dog">Dog</option>
+                    <option value="cat">Cat</option>
+                </select><br />
+
+                <input type="submit" value="Update Citizen" />
+                <button className="deleteButton" onClick={deleteCitizen}>Remove from City</button>
             </form>
         </div>
     )
 }
 
-export default EditPost
+export default EditPost;

@@ -3,50 +3,41 @@ import './CreatePost.css'
 import { supabase } from '../client'
 
 const CreatePost = () => {
+    const [citizen, setCitizen] = useState({ name: "", age: "", avatar: "man" });
 
-    const [post, setPost] = useState({ title: "", author: "", description: "" })
-    
     const handleChange = (event) => {
-        const { name, value } = event.target
-        setPost((prev) => {
-            return {
-                ...prev,
-                [name]: value,
-            }
-        })
+        const { name, value } = event.target;
+        setCitizen(prev => ({ ...prev, [name]: value }));
     }
 
     const handleSubmit = async (event) => {
-        event.preventDefault() // Prevents the page from refreshing
-        
+        event.preventDefault();
         await supabase
-            .from('Posts')
-            .insert({ title: post.title, author: post.author, description: post.description })
-            .select()
-
-        window.location = "/"
+            .from('Citizens') // Updated table name
+            .insert(citizen);
+        window.location = "/citizens";
     }
 
-
     return (
-        <div>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="title">Title</label> <br />
-                <input type="text" id="title" name="title" onChange={handleChange} /><br />
-                <br />
+        <form onSubmit={handleSubmit}>
+            <label>Name</label>
+            <input type="text" name="name" onChange={handleChange} />
 
-                <label htmlFor="author">Author</label><br />
-                <input type="text" id="author" name="author" onChange={handleChange} /><br />
-                <br />
+            <label>Age</label>
+            <input type="number" name="age" onChange={handleChange} />
 
-                <label htmlFor="description">Description</label><br />
-                <textarea rows="5" cols="50" id="description" name="description" onChange={handleChange}>
-                </textarea>
-                <br />
-                <input type="submit" value="Submit"/>
-            </form>
-        </div>
-    )
+            <label>Avatar</label>
+            <select name="avatar" onChange={handleChange}>
+                <option value="man">👨 Man</option>
+                <option value="woman">👩 Woman</option>
+                <option value="boy">👦 Boy</option>
+                <option value="girl">👧 Girl</option>
+                <option value="dog">🐕 Dog</option>
+                <option value="cat">🐈 Cat</option>
+            </select>
+            
+            <button type="submit">Invite to City</button>
+        </form>
+    );
 }
-
 export default CreatePost
